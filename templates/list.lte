@@ -1,0 +1,65 @@
+{% autoescape false %}
+<div id="droplets" class="container">
+<div class="pag_title">Groups and Modules</div>
+<form class="ui form" action="{{ action }}" method="post">
+    <input type="hidden" name="leptoken" value="{{ leptoken }}" />
+    <table class="pag_table">
+    <thead>
+        <tr>
+            <td class="pag_row">&nbsp;</td>
+            <td class="pag_row">&nbsp;</td>
+        {% for g in allGroups %}
+            <td class="pag_row group_title{% if (g.backend_access == 0) %} no_backend_access{% endif %}">{{ g.name }}</td>
+        {% endfor %}
+        </tr>
+        
+        <tr>
+            <td class="pag_row"><select class="ui simple dropdown select tiny"><option>Name</option><option value="id" selected="selected">id</option></select></td>
+            <td class="pag_row">&nbsp;</td>
+    {% for g in allGroups %}
+            <td class="pag_row">
+                {% if (g.group_id > 1) %}<input name="main" type="checkbox" value="0" onclick="toggleColumn({{ g.group_id }}, this);">{% endif %}
+            </td>
+    {% endfor %}
+        </tr>
+    
+    </thead>
+    <tbody>
+{% for module in allModules %}
+    <tr>
+        <td class="pag_row page_row_deep_0">
+        {{ module.name }}
+        </td>
+        <td class="pag_row"><i class="icon cogs {% if (module.function == 'tool') %}orange{% else %}olive{% endif %}" title="{% if (module.function== 'page') %}page{% else %}tool{% endif %}"></i></td>
+    {% for g in allGroups %}
+        <td class="pag_row pag_col_{% if(loop.index % 2) %}1{% else %}2{% endif %}">
+            <input name="groups[{{ g.group_id }}][]" class="c{{ g.group_id }}" id="{{ module.addon_id }}_{{ g.group_id }}" type="checkbox" value="{{ module.directory }}" {% if (module.directory in g.module_permissions) %}checked='checked'{% endif %}>
+        </td>
+    {% endfor %}
+    </tr>
+{% endfor %}
+    </tbody>
+    </table>
+    <div class="column spacer1"></div>
+    <div class="column">
+        <button class="floated positive ui button" type="submit" >{{ TEXT.SAVE }}</button>
+        <button class="floated ui button orange" type="reset" >{{ TEXT.RESET }}</button>
+    </div>	
+
+<form>
+
+</div>
+<script>
+
+let myLeptoken = "leptokh=#-!leptoken-!#";
+let myTerms = myLeptoken.split("=");
+let nowLeptoken = myTerms[1];
+console.log("Leptoken: "+nowLeptoken);
+
+function toggleColumn(num, selectRef) {
+    let check_boxes = $(".c"+num);
+    check_boxes.prop("checked", selectRef.checked);
+}
+
+</script>
+{% endautoescape %}
